@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/welcomeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to Rock Paper Scissors"
+        android:textSize="24sp"
+        android:paddingBottom="32dp" />
+
+    <Button
+        android:id="@+id/hostButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Host Game"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/joinButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join Game" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Press play to start the game"
+        android:textSize="18sp" />
+
+    <RadioGroup
+        android:id="@+id/choiceGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioRock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Rock" />
+
+        <RadioButton
+            android:id="@+id/radioPaper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Paper" />
+
+        <RadioButton
+            android:id="@+id/radioScissors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Scissors" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:text="Confirm Choice" />
+
+    <Button
+        android:id="@+id/homeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:text="Go Home"
+        android:visibility="gone" />
+
+</LinearLayout>

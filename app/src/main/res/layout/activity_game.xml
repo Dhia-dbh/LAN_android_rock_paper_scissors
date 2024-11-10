@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioRock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onChoiceSelected"
+            android:minHeight="48dp"
+            android:text="Rock" />
+
+        <RadioButton
+            android:id="@+id/radioPaper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onChoiceSelected"
+            android:minHeight="48dp"
+            android:text="Paper" />
+
+        <RadioButton
+            android:id="@+id/radioScissors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:onClick="onChoiceSelected"
+            android:text="Scissors" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onConfirmChoice"
+        android:text="Confirm Choice" />
+
+    <Button
+        android:id="@+id/goHomeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onGoHome"
+        android:text="GO HOME"
+        android:visibility="gone" />
+</LinearLayout>
