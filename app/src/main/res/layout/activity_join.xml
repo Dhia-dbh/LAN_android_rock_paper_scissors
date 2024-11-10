@@ -3,10 +3,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Searching for open games..." />
+        android:text="Enter the IP address of the host to join the game:"
+        android:textSize="18sp"
+        android:paddingBottom="16dp" />
+
+    <EditText
+        android:id="@+id/ipAddressInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="IP Address"
+        android:inputType="text"
+        android:background="@android:drawable/editbox_background_normal"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:textSize="16sp" />
+
 </LinearLayout>

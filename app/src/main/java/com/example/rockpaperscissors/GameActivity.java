@@ -1,22 +1,30 @@
 package com.example.rockpaperscissors;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class GameActivity extends AppCompatActivity {
+    private Button btnConfirmButton;
     private String playerChoice = "";
-    private boolean isChoiceConfirmed = false;
-    private Socket socket;
+    private boolean isPlayerChoiceConfirmed = false;
+    private boolean isOpponentChoiceConfirmed = false;
+    private ServerSocket serverSocket = null;
+    private Socket clientSocket;
     private BufferedReader in;
     private PrintWriter out;
     private String opponentChoice = "";
@@ -25,16 +33,19 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        btnConfirmButton = findViewById(R.id.confirmButton);
+        btnConfirmButton.setEnabled(false);
 
         if (HostActivity.clientSocket != null) {
-            socket = HostActivity.clientSocket;
+            clientSocket = HostActivity.clientSocket;
+            serverSocket = HostActivity.serverSocket;
         } else if (JoinActivity.socket != null) {
-            socket = JoinActivity.socket;
+            clientSocket = JoinActivity.socket;
         }
 
         try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,9 +57,12 @@ public class GameActivity extends AppCompatActivity {
                     while (true) {
                         String message = in.readLine();
                         if (message != null) {
-                            opponentChoice = message;
-                            if (!playerChoice.isEmpty() && !opponentChoice.isEmpty()) {
-                                determineAndDisplayWinner();
+                            synchronized (GameActivity.this) {
+                                opponentChoice = message;
+                                isOpponentChoiceConfirmed = true;
+                                if (isPlayerChoiceConfirmed) {
+                                    determineAndDisplayWinner();
+                                }
                             }
                         }
                     }
@@ -59,41 +73,55 @@ public class GameActivity extends AppCompatActivity {
         }).start();
     }
 
-    public void onChoiceSelected(View view) {
+    public synchronized void onChoiceSelected(View view) {
         // Check which radio button was clicked
         RadioButton radioButton = (RadioButton) view;
         playerChoice = radioButton.getText().toString();
+        btnConfirmButton.setEnabled(true);
     }
 
     public void onConfirmChoice(View view) {
-        if (!playerChoice.isEmpty()) {
-            isChoiceConfirmed = true;
+        synchronized (this) {
+            isPlayerChoiceConfirmed = true;
             view.setEnabled(false); // Disable the confirm button
 
             // Send choice to opponent
             out.println(playerChoice);
 
             // If both choices are made, determine the winner
-            if (!opponentChoice.isEmpty()) {
+            if (isPlayerChoiceConfirmed && isOpponentChoiceConfirmed) {
+                Log.d("GameActivity", "Player choice: " + playerChoice);
+                Log.d("GameActivity", "Opponent choice: " + opponentChoice);
                 determineAndDisplayWinner();
             }
-        } else {
-            Toast.makeText(this, "Please select an option.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void determineAndDisplayWinner() {
+    private synchronized void determineAndDisplayWinner() {
         String result = determineWinner(playerChoice, opponentChoice);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(GameActivity.this, result, Toast.LENGTH_LONG).show();
-                findViewById(R.id.goHomeButton).setVisibility(View.VISIBLE);
+                alert("Game Result", result);
             }
         });
     }
 
-    private String determineWinner(String player, String opponent) {
+    private void alert(String title, String msg) {
+        new AlertDialog.Builder(GameActivity.this)
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        findViewById(R.id.goHomeButton).setVisibility(View.VISIBLE);
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    private synchronized String determineWinner(String player, String opponent) {
         if (player.equals(opponent)) {
             return "It's a Draw!";
         } else if ((player.equals("Rock") && opponent.equals("Scissors")) ||
@@ -106,7 +134,23 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void onGoHome(View view) {
+        try {
+            synchronized (this) {
+                if (clientSocket != null && !clientSocket.isClosed()) {
+                    clientSocket.close();
+                    Log.d("GameActivity", "Client Socket closed successfully");
+                }
+                if (serverSocket != null && !serverSocket.isClosed()) {
+                    serverSocket.close();
+                    Log.d("GameActivity", "Server Socket closed successfully");
+                }
+            }
+        } catch (IOException e) {
+            alert("ERROR", "Error closing sockets");
+            return;
+        }
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 }
