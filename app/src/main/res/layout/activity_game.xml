@@ -5,7 +5,16 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waiting for opponent..."
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
     <RadioGroup
+        android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -14,16 +23,16 @@
             android:id="@+id/radioRock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onChoiceSelected"
             android:minHeight="48dp"
+            android:onClick="onChoiceSelected"
             android:text="Rock" />
 
         <RadioButton
             android:id="@+id/radioPaper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onChoiceSelected"
             android:minHeight="48dp"
+            android:onClick="onChoiceSelected"
             android:text="Paper" />
 
         <RadioButton
@@ -40,7 +49,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onConfirmChoice"
-        android:text="Confirm Choice" />
+        android:text="Confirm Choice"
+        android:layout_marginTop="16dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/goHomeButton"
@@ -48,5 +65,6 @@
         android:layout_height="wrap_content"
         android:onClick="onGoHome"
         android:text="GO HOME"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginTop="16dp" />
 </LinearLayout>
