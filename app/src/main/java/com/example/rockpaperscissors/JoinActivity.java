@@ -7,7 +7,6 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,13 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.Enumeration;
 
 public class JoinActivity extends AppCompatActivity {
     private static final int PORT = 8080;
     private static final String TAG = "JoinActivity";
     public static Socket socket;
-    private EditText ipAddressInput;
     private Button connectButton;
 
     @Override
@@ -34,18 +34,17 @@ public class JoinActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        ipAddressInput = findViewById(R.id.ipAddressInput);
         connectButton = findViewById(R.id.connectButton);
 
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String hostIp = ipAddressInput.getText().toString().trim();
-                if (isValidIpAddress(hostIp)) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String hostIp = findHostIp();
+                            if (hostIp != null) {
                                 Log.i(TAG, "Attempting to find host at " + hostIp);
                                 socket = new Socket();
                                 socket.connect(new InetSocketAddress(hostIp, PORT), 1000);
@@ -59,26 +58,42 @@ public class JoinActivity extends AppCompatActivity {
                                         startActivity(intent);
                                     }
                                 });
-                            } catch (IOException e) {
-                                Log.e(TAG, "Failed to connect to: " + hostIp, e);
-                                runOnUiThread(() -> Toast.makeText(JoinActivity.this, "Failed to connect to: " + hostIp, Toast.LENGTH_SHORT).show());
+                            } else {
+                                runOnUiThread(() -> alert("Host Not Found", "No local host was found."));
                             }
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to connect to host.", e);
+                            runOnUiThread(() -> Toast.makeText(JoinActivity.this, "Failed to connect to host.", Toast.LENGTH_SHORT).show());
                         }
-                    }).start();
-                } else {
-                    alert("Invalid IP Address", "Please enter a valid IP address.");
-                }
+                    }
+                }).start();
             }
         });
     }
 
-    private boolean isValidIpAddress(String ipAddress) {
+    private String findHostIp() {
         try {
-            InetAddress inet = InetAddress.getByName(ipAddress);
-            return inet.getHostAddress().equals(ipAddress) && ipAddress.split("\\.").length == 4;
-        } catch (Exception e) {
-            return false;
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (!address.isLoopbackAddress() && address.isSiteLocalAddress()) {
+                        String potentialHost = address.getHostAddress();
+                        try (Socket testSocket = new Socket()) {
+                            testSocket.connect(new InetSocketAddress(potentialHost, PORT), 500);
+                            return potentialHost;
+                        } catch (IOException ignored) {
+                            Log.d("JoinAcitivity", "Failed Connection to : " + potentialHost);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Error while searching for host IP.", e);
         }
+        return null;
     }
 
     private void alert(String title, String msg) {
