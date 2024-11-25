@@ -22,7 +22,9 @@
         android:background="@android:drawable/editbox_background_normal"
         android:padding="12dp"
         android:textSize="16sp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:maxLength="15"
+        android:digits="0123456789." />
 
     <Button
         android:id="@+id/connectButton"

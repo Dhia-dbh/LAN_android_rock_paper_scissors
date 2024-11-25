@@ -9,10 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -39,7 +41,7 @@ public class JoinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String hostIp = ipAddressInput.getText().toString().trim();
-                if (!hostIp.isEmpty()) {
+                if (isValidIpAddress(hostIp)) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -64,10 +66,19 @@ public class JoinActivity extends AppCompatActivity {
                         }
                     }).start();
                 } else {
-                    alert("ERROR", "Please enter a valid IP address");
+                    alert("Invalid IP Address", "Please enter a valid IP address.");
                 }
             }
         });
+    }
+
+    private boolean isValidIpAddress(String ipAddress) {
+        try {
+            InetAddress inet = InetAddress.getByName(ipAddress);
+            return inet.getHostAddress().equals(ipAddress) && ipAddress.split("\\.").length == 4;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void alert(String title, String msg) {
@@ -77,7 +88,7 @@ public class JoinActivity extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        findViewById(R.id.goHomeButton).setVisibility(View.VISIBLE);
+                        // Dismiss the dialog
                     }
                 })
                 .setCancelable(false)
