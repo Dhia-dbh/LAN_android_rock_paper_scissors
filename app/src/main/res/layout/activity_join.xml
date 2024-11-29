@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="numberDecimal"
-            android:maxEms="254"
+            android:maxEms="3"
             android:minEms="0" />
     </LinearLayout>
 

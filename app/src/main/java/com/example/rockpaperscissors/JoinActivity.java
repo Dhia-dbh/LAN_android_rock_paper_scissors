@@ -4,6 +4,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -61,6 +65,44 @@ public class JoinActivity extends AppCompatActivity {
 
         connectButton = findViewById(R.id.connectButton);
 
+        InputFilter rangeFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                String result = dest.toString() + source.toString();
+                // Validate the number is between 0 and 255
+                if (result.matches("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") || result.isEmpty()) {
+                    return null; // Allow valid input
+                } else {
+                    return ""; // Reject invalid input
+                }
+            }
+        };
+
+        ipAddressInput1.setFilters(new InputFilter[]{rangeFilter});
+        ipAddressInput2.setFilters(new InputFilter[]{rangeFilter});
+        ipAddressInput3.setFilters(new InputFilter[]{rangeFilter});
+        ipAddressInput4.setFilters(new InputFilter[]{rangeFilter});
+
+        String ipAddress = NetworkUtils.getIPAddress(this);
+        Log.d("JoinActivity", "ipAddress: " + ipAddress);
+        short subnetMask = NetworkUtils.getSubnetMask();
+        assert ipAddress != null;
+        String[] ipAddresses = ipAddress.split("\\.");
+        if(subnetMask == 24){
+            ipAddressInput1.setText(ipAddresses[0]);
+            //ipAddressInput1.setFocusable(false);
+            ipAddressInput2.setText(ipAddresses[1]);
+            //ipAddressInput2.setFocusable(false);
+            ipAddressInput3.setText(ipAddresses[2]);
+            //ipAddressInput3.setFocusable(false);
+        }
+
+        // TextWatcher to auto-focus onto the next EditText when length reaches 3
+        ipAddressInput1.addTextChangedListener(createTextWatcher(ipAddressInput2));
+        ipAddressInput2.addTextChangedListener(createTextWatcher(ipAddressInput3));
+        ipAddressInput3.addTextChangedListener(createTextWatcher(ipAddressInput4));
+        
+        
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,11 +137,25 @@ public class JoinActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
-        String ipHost = NetworkUtils.getIPAddress(JoinActivity.this);
-        short subnetMask = NetworkUtils.getSubnetMask();
+    private TextWatcher createTextWatcher(final EditText nextEditText) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
 
-        Toast.makeText(this, "Ip address: " + NetworkUtils.getIPAddress(JoinActivity.this) + " \t/" + NetworkUtils.getSubnetMask(), Toast.LENGTH_LONG).show();
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int after) {}
+
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Move focus to the next EditText when the length reaches 3
+                if (editable.length() == 3) {
+                    nextEditText.requestFocus();
+                }
+            }
+        };
     }
 
     private boolean isValidIpAddress(String ipAddress) {
