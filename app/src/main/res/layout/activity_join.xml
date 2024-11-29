@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -13,18 +14,71 @@
         android:textSize="18sp"
         android:paddingBottom="16dp" />
 
-    <EditText
-        android:id="@+id/ipAddressInput"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="IP Address"
-        android:inputType="text"
-        android:background="@android:drawable/editbox_background_normal"
-        android:padding="12dp"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp"
-        android:maxLength="15"
-        android:digits="0123456789." />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/ipAddressInput1"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:maxEms="255"
+            android:minEms="0" />
+
+        <TextView
+            android:id="@+id/dot1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            tools:text="." />
+
+        <EditText
+            android:id="@+id/ipAddressInput2"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:maxEms="255"
+            android:minEms="0" />
+
+        <TextView
+            android:id="@+id/dot2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            tools:text="." />
+
+        <EditText
+            android:id="@+id/ipAddressInput3"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:maxEms="255"
+            android:minEms="0" />
+
+        <TextView
+            android:id="@+id/dot3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            tools:text="." />
+
+        <EditText
+            android:id="@+id/ipAddressInput4"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:maxEms="254"
+            android:minEms="0" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/connectButton"
